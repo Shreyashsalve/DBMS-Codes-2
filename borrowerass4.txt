@@ -1,0 +1,63 @@
+CREATE TABLE Borrower (
+    Roll NUMBER PRIMARY KEY NOT NULL,
+    Name VARCHAR2(30),
+    DateOfIssue DATE,
+    NameOfBook VARCHAR2(30),
+    Status VARCHAR2(30)
+);
+
+INSERT INTO Borrower VALUES(1, 'Aayushi', TO_DATE('24-10-2024', 'DD-MM-YYYY'), 'Harry Potter', 'I');
+INSERT INTO Borrower VALUES(2, 'Akshay', TO_DATE('15-10-2024', 'DD-MM-YYYY'), 'Piaretes of the Carrebian', 'I');
+INSERT INTO Borrower VALUES(3, 'Snehal', TO_DATE('25-10-2024', 'DD-MM-YYYY'), 'Prince of Persia', 'I');
+INSERT INTO Borrower VALUES(4, 'Vanshika', TO_DATE('06-11-2024', 'DD-MM-YYYY'), 'Percy Jackson', 'I');
+INSERT INTO Borrower VALUES(5, 'Mansi', TO_DATE('1-11-2024', 'DD-MM-YYYY'), 'Beauty and the Beast', 'I');
+
+SELECT * FROM Borrower;
+
+CREATE TABLE Fine (
+    Roll NUMBER,
+    DateOfReturn DATE,
+    Amt NUMBER,
+    FOREIGN KEY (Roll) REFERENCES Borrower(Roll)
+);
+
+CREATE OR REPLACE PROCEDURE find_cal(roll_no IN INT, bname IN VARCHAR2)
+IS
+    idate DATE;
+    diff NUMBER;
+    fine_amt NUMBER;
+BEGIN
+    -- Get the Date of Issue
+    SELECT DateOfIssue INTO idate FROM Borrower WHERE Roll = roll_no AND NameOfBook = bname;
+    
+    -- Calculate the difference in days
+    diff := TRUNC(SYSDATE - idate);
+    
+    -- Calculate fine based on the number of days
+    IF diff > 15 AND diff <= 30 THEN
+        fine_amt := diff * 5;
+        INSERT INTO Fine VALUES (roll_no, SYSDATE, fine_amt);
+    ELSIF diff > 30 THEN
+        fine_amt := 15 * 5 + (diff - 30) * 50;
+        INSERT INTO Fine VALUES (roll_no, SYSDATE, fine_amt);
+    END IF;
+    
+    -- Update the Borrower status to Returned
+    UPDATE Borrower SET Status = 'R' WHERE Roll = roll_no;
+END find_cal;
+/
+
+-- Execute the Procedure
+BEGIN
+    find_cal(1, 'Harry Potter');
+END;
+/
+
+-- Display the Fine Table
+SELECT * FROM Fine;
+
+-- Display the Borrower Table
+SELECT * FROM Borrower;
+
+DROP TABLE Borrower;
+DROP TABLE Fine;

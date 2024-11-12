@@ -1,0 +1,39 @@
+CREATE TABLE Stud_Marks(name VARCHAR2(30) PRIMARY KEY,total_marks NUMBER);
+
+INSERT INTO Stud_Marks VALUES('Aayushi',1300);
+INSERT INTO Stud_Marks VALUES('Snehal',950);
+INSERT INTO Stud_Marks VALUES('Vanshika',1200);
+INSERT INTO Stud_Marks VALUES('Prajwal',600);
+INSERT INTO Stud_Marks VALUES('Mansi',830);
+
+SELECT * FROM Stud_Marks;
+
+CREATE TABLE Result(Roll NUMBER,Name VARCHAR2(30),Class VARCHAR2(30));
+	
+CREATE OR REPLACE PROCEDURE proc_Grade(roll_no IN NUMBER,sname IN VARCHAR2, marks IN NUMBER)
+AS
+BEGIN
+	IF(marks<=1500 and marks>=990) THEN
+		DBMS_OUTPUT.PUT_LINE(roll_no||' '||sname||' '||'DISTINCTION');
+		INSERT INTO Result VALUES(roll_no,sname,'DISTINCTION');
+	ELSIF(marks<=989 and marks>=900) THEN
+		DBMS_OUTPUT.PUT_LINE(roll_no||' '||sname||' '||'FIRST CLASS');
+		INSERT INTO Result VALUES(roll_no,sname,'FIRST CLASS');
+	ELSIF(marks<=899 and marks>=825) THEN
+		DBMS_OUTPUT.PUT_LINE(roll_no||' '||sname||' '||'HIGHER SECOND CLASS');
+		INSERT INTO Result VALUES(roll_no,sname,'HIGHER SECOND CLASS');
+	ELSE
+		DBMS_OUTPUT.PUT_LINE(roll_no||' '||sname||' '||'FAIL');
+		INSERT INTO Result VALUES(roll_no,sname,'FAIL');
+	END IF;
+END proc_Grade;
+
+BEGIN
+	proc_Grade(1,'Aayushi',1300);
+	proc_Grade(2,'Snehal',950);
+	proc_Grade(3,'Vanshika',1200);
+	proc_Grade(4,'Prajwal',600);
+	proc_Grade(5,'Mansi',830);
+END;
+
+SELECT * FROM Result; 

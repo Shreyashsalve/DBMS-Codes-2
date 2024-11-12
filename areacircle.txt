@@ -1,0 +1,25 @@
+CREATE TABLE Area(radius INT, Area FLOAT);
+
+DECLARE 
+area NUMBER;
+PI CONSTANT NUMBER:=3.1415;
+BEGIN
+	FOR i IN 5..9
+    	LOOP
+		area:=PI*i*i;
+      		INSERT INTO Area VALUES(i,area);
+	END LOOP;
+END;
+/
+
+SELECT * FROM Area;
+
+OUTPUT:
+
+ RADIUS	 AREA
+---------- ----------
+	 5    78.5375
+	 6    113.094
+	 7   153.9335
+	 8    201.056
+	 9   254.4615

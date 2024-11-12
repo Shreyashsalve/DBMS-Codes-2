@@ -1,0 +1,54 @@
+CREATE TABLE Student ( 
+    Student_ID INT PRIMARY KEY, 
+    Student_Name VARCHAR(100), 
+    Marks INT, 
+    Category VARCHAR2(20)  
+);
+
+INSERT INTO Student (Student_ID, Student_Name, Marks) 
+VALUES (1, 'John Doe', 1200);
+
+INSERT INTO Student (Student_ID, Student_Name, Marks) 
+VALUES (2, 'Jane Smith', 950);
+
+INSERT INTO Student (Student_ID, Student_Name, Marks) 
+VALUES (3, 'Emily Johnson', 880);
+
+INSERT INTO Student (Student_ID, Student_Name, Marks) 
+VALUES (4, 'Michael Brown', 800);
+
+CREATE OR REPLACE FUNCTION CategorizeMarks(marks INT) RETURN VARCHAR2 IS 
+    v_category VARCHAR2(20); 
+BEGIN 
+    IF marks BETWEEN 999 AND 1500 THEN 
+        v_category := 'Distinction'; 
+    ELSIF marks BETWEEN 900 AND 998 THEN 
+        v_category := 'First Class'; 
+    ELSIF marks BETWEEN 825 AND 899 THEN 
+        v_category := 'Second Class'; 
+    ELSE 
+        v_category := 'Pass'; 
+    END IF; 
+    RETURN v_category; 
+EXCEPTION 
+    WHEN OTHERS THEN 
+        RETURN 'Error'; 
+END;
+/
+
+CREATE OR REPLACE PROCEDURE UpdateStudentCategory IS 
+BEGIN 
+    FOR rec IN (SELECT Student_ID, Marks FROM Student) LOOP 
+        UPDATE Student 
+        SET Category = CategorizeMarks(rec.Marks) 
+        WHERE Student_ID = rec.Student_ID; 
+    END LOOP; 
+     
+    COMMIT; 
+END;
+
+BEGIN 
+    UpdateStudentCategory; 
+END;
+
+Select* from Student

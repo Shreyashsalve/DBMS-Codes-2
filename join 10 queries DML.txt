@@ -1,0 +1,123 @@
+-- Create tables
+CREATE TABLE Hotel1 (
+    Hotel_no NUMBER PRIMARY KEY,
+    Name VARCHAR2(50),
+    city VARCHAR2(20)
+);
+
+CREATE TABLE Room1 (
+    Room_no NUMBER PRIMARY KEY,
+    Hotel_no NUMBER,
+    RType VARCHAR2(50),
+    Price NUMBER(20,2),
+    FOREIGN KEY (Hotel_no) REFERENCES Hotel1(Hotel_no)
+);
+
+CREATE TABLE Guest1 (
+    Guest_no NUMBER PRIMARY KEY,
+    GuestName VARCHAR2(50),
+    GuestAddress VARCHAR2(20)
+);
+
+CREATE TABLE Booking1 (
+    Guest_no NUMBER,
+    Hotel_no NUMBER,
+    Room_no NUMBER,
+    DateFrom DATE,
+    DateTo DATE,
+    FOREIGN KEY (Guest_no) REFERENCES Guest1(Guest_no),
+    FOREIGN KEY (Hotel_no) REFERENCES Hotel1(Hotel_no),
+    FOREIGN KEY (Room_no) REFERENCES Room1(Room_no)
+);
+
+-- Insert values into Room1
+INSERT INTO Room1 VALUES (204, 105, '4bhk', 80000);
+INSERT INTO Room1 VALUES (203, 104, '3bhk', 70000);
+INSERT INTO Room1 VALUES (202, 102, '2bhk', 60000);
+INSERT INTO Room1 VALUES (201, 101, '1bhk', 50000);
+
+-- Check Room1 data
+SELECT * FROM Room1;
+
+-- Insert values into Hotel1
+INSERT INTO Hotel1 VALUES (101, 'Taj', 'Mumbai');
+INSERT INTO Hotel1 VALUES (102, 'Grosnover', 'London');
+INSERT INTO Hotel1 VALUES (103, 'Pan', 'Pune');
+INSERT INTO Hotel1 VALUES (104, 'Vermount', 'London');
+INSERT INTO Hotel1 VALUES (105, 'Ponut', 'London');
+
+-- Check Hotel1 data
+SELECT * FROM Hotel1;
+
+-- Insert values into Booking1
+INSERT INTO Booking1 (Guest_no, Hotel_no, Room_no, DateFrom, DateTo) 
+VALUES (1, 101, 201, TO_DATE('2024-11-10', 'YYYY-MM-DD'), TO_DATE('2024-11-11', 'YYYY-MM-DD'));
+
+INSERT INTO Booking1 VALUES (2, 103, 202, TO_DATE('2024-12-10', 'YYYY-MM-DD'), TO_DATE('2024-12-11', 'YYYY-MM-DD'));
+INSERT INTO Booking1 VALUES (3, 102, 202, TO_DATE('2024-12-10', 'YYYY-MM-DD'), TO_DATE('2024-12-11', 'YYYY-MM-DD'));
+INSERT INTO Booking1 VALUES (4, 104, 203, TO_DATE('2024-12-10', 'YYYY-MM-DD'), TO_DATE('2024-12-11', 'YYYY-MM-DD'));
+INSERT INTO Booking1 VALUES (5, 105, 204, TO_DATE('2024-12-10', 'YYYY-MM-DD'), TO_DATE('2024-12-11', 'YYYY-MM-DD'));
+
+-- Check Booking1 data
+SELECT * FROM Booking1;
+
+-- Insert values into Guest1
+INSERT INTO Guest1 VALUES (1, 'AA', 'PUNE,56789');
+INSERT INTO Guest1 VALUES (2, 'BB', 'PUNE,12345');
+INSERT INTO Guest1 VALUES (3, 'CC', 'MUMBAI,56789');
+INSERT INTO Guest1 VALUES (4, 'DD', 'GOA,0989');
+INSERT INTO Guest1 VALUES (5, 'EE', 'PUNE,56789');
+
+-- Update statements
+UPDATE Room1 SET Price = 85000 WHERE RType = '4bhk';
+UPDATE Hotel1 SET city = 'New York' WHERE Hotel_no = 103;
+UPDATE Guest1 SET GuestAddress = 'PUNE,54321' WHERE GuestName = 'BB';
+
+-- Delete statements
+DELETE FROM Guest1 WHERE GuestName = 'DD';
+DELETE FROM Booking1 WHERE Guest_no = 5 AND Hotel_no = 105;
+
+-- Select statement to check updated tables
+SELECT * FROM Room1;
+SELECT * FROM Hotel1;
+SELECT * FROM Guest1;
+SELECT * FROM Booking1;
+
+-- Joins
+
+-- INNER JOIN: Find guests who have booked rooms in London hotels
+SELECT * 
+FROM Guest1 G
+INNER JOIN Booking1 B ON G.Guest_no = B.Guest_no
+INNER JOIN Hotel1 H ON B.Hotel_no = H.Hotel_no
+WHERE H.city = 'London'
+ORDER BY G.GuestName ASC;
+
+-- LEFT JOIN: Display all guests and their booking information, even if they have not made a booking
+SELECT G.GuestName, B.Room_no, B.DateFrom, B.DateTo
+FROM Guest1 G
+LEFT JOIN Booking1 B ON G.Guest_no = B.Guest_no
+ORDER BY G.GuestName ASC;
+
+-- RIGHT JOIN: Display all bookings and the corresponding guest information, if available
+SELECT B.Guest_no, G.GuestName, B.Room_no, B.DateFrom, B.DateTo
+FROM Booking1 B
+RIGHT JOIN Guest1 G ON B.Guest_no = G.Guest_no
+ORDER BY B.Guest_no ASC;
+
+-- FULL OUTER JOIN: Show all guests and bookings, with NULLs where there is no match
+SELECT G.GuestName, B.Room_no, B.DateFrom, B.DateTo
+FROM Guest1 G
+FULL OUTER JOIN Booking1 B ON G.Guest_no = B.Guest_no
+ORDER BY G.GuestName ASC;
+
+
+-- Find bookings with NULL dates
+SELECT * FROM Booking1 WHERE DateFrom IS NULL OR DateTo IS NULL;
+
+-- Count the number of hotels
+SELECT COUNT(Hotel_no) FROM Hotel1;
+
+-- Create view and index
+CREATE VIEW Hotel_view AS SELECT city, Name FROM Hotel1;
+CREATE INDEX hotel_index ON Hotel1(Hotel_no);
